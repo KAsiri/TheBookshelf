@@ -1,0 +1,47 @@
+{% extends "main.html" %}
+{% block content %}
+<div style="margin-top: 10px" class="container">
+    <div>
+        <form>
+            <div class="form-group">
+                <div id="formdiv">
+                    <div class="form-row" style="margin-right:0px;margin-left:0px;padding-top:24px;">
+                        <div class="col-md-8 offset-md-1">
+                            <p style="margin-left:2%;font-family:Roboto, sans-serif;font-size:24px;"><strong>Book Name</strong></p>
+                        </div>
+                        <div class="col-md-10 offset-md-1"><input class="form-control" type="text" name="name" required=""
+                                placeholder="Book title" style="margin-left:0px;font-family:Roboto, sans-serif;"></div>
+                    </div>
+                    <div class="form-row" style="margin-right:0px;margin-left:0px;padding-top:24px;margin-top:-16px;">
+                        <div class="col-md-8 offset-md-1">
+                            <p style="margin-left:2%;font-family:Roboto, sans-serif;font-size:24px;"><strong>Author
+                                    Name</strong></p>
+                        </div>
+                        <div class="col-md-10 offset-md-1"><input class="form-control" type="text" name="author_name"
+                                placeholder="First Name Last Name" style="margin-left:0px;font-family:Roboto, sans-serif;"></div>
+                    </div>
+                    <div class="form-row" style="margin-right:0px;margin-left:0px;padding-top:24px;">
+                        <div class="col-md-8 offset-md-1">
+                            <p style="margin-left:2%;font-family:Roboto, sans-serif;font-size:24px;">Publish Year<br></p>
+                        </div>
+                        <div class="col-md-10 offset-md-1"><input class="form-control" type="text" name="publish_year"
+                                placeholder="2018" style="margin-left:0px;font-family:Roboto, sans-serif;"></div>
+                    </div>
+                    <div class="form-row" style="margin-right:0px;margin-left:0px;padding-top:24px;">
+                        <div class="col-md-8 offset-md-1">
+                            <p style="margin-left:2%;font-family:Roboto, sans-serif;font-size:24px;">Description<br></p>
+                        </div>
+                        <div class="col-md-10 offset-md-1"><textarea class="form-control" rows="3" name="description"
+                                placeholder="description of the book ..."></textarea></div>
+                    </div>
+                    <div class="form-row" style="margin-right:0px;margin-left:0px;padding-top:24px;">
+                        <div class="col-12 col-md-4 offset-md-4"><button class="btn btn-light btn-lg" type="reset"
+                                style="font-family:Roboto, sans-serif;">Clear </button><button class="btn btn-light btn-lg"
+                                type="submit" style="margin-left:16px;">Submit </button></div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

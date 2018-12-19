@@ -1,0 +1,26 @@
+{% extends "main.html" %}
+{% block content %}
+
+<div class="article-list">
+    <div class="container">
+        <div class="intro">
+                <h1 align="center">Top Catalogs</h1>
+        </div>
+        <div id="result"></div>
+        <div class="row articles">
+            <div class="col-sm-6 col-md-4 item"><a href="/catalogs/1/book"><img class="img-fluid" src="/static/assets/img/history.png">
+                    <h3 class="name">History Book</h3>
+                </a></div>
+            <div class="col-sm-6 col-md-4 item"><a href="/catalogs/2/book"><img class="img-fluid" src="/static/assets/img/sciences.png">
+                    <h3 class="name">Sciences Books</h3>
+                </a></div>
+            <div class="col-sm-6 col-md-4 item"><a href="/catalogs/3/book"><img class="img-fluid" src="/static/assets/img/kids.png">
+                    <h3 class="name">Kids Books</h3>
+                </a></div>
+            <div class="col-sm-6 col-md-4 item"><a href="/catalogs/4/book"><img class="img-fluid" src="/static/assets/img/crime.png">
+                    <h3 class="name">Crime Books</h3>
+                </a></div>
+        </div>
+    </div>
+</div>
+{% endblock %}

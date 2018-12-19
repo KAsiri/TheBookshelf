@@ -1,0 +1,23 @@
+{% extends "main.html" %}
+{% block content %}
+<div style="margin-top: 10px" class="container">
+        <div>
+            <form action="#" method = "post">
+                <div class="form-group">
+                    <div id="formdiv">
+                        <div align="center" style="padding: 5%;">
+                                <h3>Delete Book</h3><br>
+                                <p style="color:red">Do you want to delete bool: {{ book.name }}?</p>
+                                <a href="javascript:history.back()"> <button type="button" class="btn btn-light action-button" style="margin-top:20px; margin-left:20px;background-color: #56C7C5;color: white">Cancel</button></a>
+                                <button type="submit" class="btn btn-light action-button" style="margin-top:20px; margin-left:20px;background-color: #56C7C5;color: white">Delete</button>
+                               
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+
+{% endblock %}

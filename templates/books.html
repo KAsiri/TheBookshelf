@@ -1,0 +1,33 @@
+{% extends "main.html" %}
+{% block content %}
+<div class="article-list">
+    <div class="container">
+        <div class="intro">
+            <h1 align="center">{{ catalog.name }}</h1>
+            {% if session['username'] %}
+            <h6 align="center"><a href="{{url_for('newBook', catalog_id = catalog.id) }}">Add new Book</a></h6>
+            {% endif %}
+        </div>
+        {% if books !=[] %}
+        <div class="row articles">
+
+            {% for i in books %}
+
+            <div class="col-sm-6 col-md-4 item"><img class="img-fluid" src="/static/assets/img/book.png">
+                    <h3 class="name">{{ i.name }}</h3>
+                    <h6>{{ i.author_name }}</h6>
+                    <p>{{ i.publish_year }}</p>
+                    <p>{{ i.description }}</p>
+                    {% if session['username'] %}
+                        <a href='{{url_for('editBook', catalog_id = catalog.id, book_id=i.id ) }}'>Edit</a> |
+                        <a href='{{url_for('deleteBook', catalog_id = catalog.id, book_id=i.id ) }}'>Delete</a>
+                    {% endif %}
+            </div>
+
+            {% endfor %}
+            
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

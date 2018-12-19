@@ -1,0 +1,31 @@
+{% extends "main.html" %}
+{% block content %}
+<div class="article-list">
+    <div class="container">
+        <div class="intro">
+            <h1 align="center">All Catalogs</h1>
+            {% if session['username'] %}
+            <h6 align="center"><a href="{{url_for('newCatalog') }}">Add new Catalog</a></h6>
+            {% endif %}
+        </div>
+        {% if catalog !=[] %}
+        <div class="row articles">
+
+            {% for i in catalog %}
+
+            <div class="col-sm-6 col-md-4 item"><a href="/catalogs/{{ i.id }}/book"><img class="img-fluid" src="/static/assets/img/bookCatalog.png">
+                    <h3 class="name">{{ i.name }}</h3>
+                    </a>
+                    {% if session['username'] %}
+                    <a href='{{url_for('editCatalog', catalog_id = i.id ) }}'>Edit</a> |
+                    <a href='{{url_for('deleteCatalog', catalog_id = i.id ) }}'>Delete</a>
+                    {% endif %}
+            </div>
+
+            {% endfor %}
+
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "main.html" %}
+{% block content %}
+<div style="margin-top: 10px" class="container">
+    <div>
+        <form action="#" method = "post">
+            <div class="form-group">
+                <div id="formdiv">
+                    <div align="center" style="padding-top: 5%;">   
+                <h3>Add new catalog</h3><br>
+                </div>
+                    <a href="javascript:history.back()" class="btn btn-light action-button" style="margin-top: 16px; margin-left:16px;background-color: #56C7C5;color: white">Cancel</a>
+                    <div class="form-row" style="margin-right:0px;margin-left:0px;padding-top:24px;">
+                        <div class="col-md-8 offset-md-1">
+                            <p style="margin-left:2%;font-family:Roboto, sans-serif;font-size:24px;"><strong>Catalog
+                                    Name</strong></p>
+                        </div>
+                        <div class="col-md-10 offset-md-1"><input class="form-control" type="text" name="name" required=""
+                                placeholder="Catalog A" style="margin-left:0px;font-family:Roboto, sans-serif;"></div>
+                    </div>
+                    <div class="form-row" style="margin-right:0px;margin-left:0px;padding-top:24px;">
+                        <div class="col-12 col-md-4 offset-md-4">
+                            <button type="reset" class="btn btn-light action-button" style="margin-left:16px;background-color: #56C7C5;color: white">Clear</button>
+                            <button type="submit" class="btn btn-light action-button" style="margin-left:16px;background-color: #56C7C5;color: white">Create</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
