@@ -105,4 +105,4 @@ session.add(book2)
 session.commit()
 
 
-print "Catalog & Books added!"
+print("Catalog & Books added!")
