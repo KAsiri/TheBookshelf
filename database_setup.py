@@ -1,7 +1,8 @@
-import sys
+import os
+from typing import List
 from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, Session
 from sqlalchemy import create_engine
 
 Base = declarative_base()
@@ -21,8 +22,7 @@ class Catalog(Base):
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
 
-    @property
-    def serialize(self):
+    def serialize(self) -> dict:
 
         return {
             'name': self.name,
@@ -44,9 +44,7 @@ class Book(Base):
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
 
-    # We added this serialize function to be able to send JSON objects in a serializable format
-    @property
-    def serialize(self):
+    def serialize(self) -> dict:
 
         return {
             'name': self.name,
@@ -58,7 +56,23 @@ class Book(Base):
         }
 
 
-engine = create_engine('sqlite:///bookscatalog.db')
+def create_engine_and_session() -> tuple:
+    """
+    Creates the database engine and session objects.
+
+    Returns:
+    engine (sqlalchemy.engine.base.Engine): The database engine object.
+    session (sqlalchemy.orm.session.Session): The database session object.
+    """
+    db_uri = os.environ.get('DATABASE_URI')
+    engine = create_engine(db_uri)
+    session = Session(bind=engine)
+    return engine, session
 
 
-Base.metadata.create_all(engine)
+def create_database() -> None:
+    """
+    Creates the database schema.
+    """
+    engine, _ = create_engine_and_session()
+    Base.metadata.create_all(engine)
