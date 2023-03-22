@@ -84,11 +84,19 @@ def showLogin():
 # use google account to login to the web-app
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
+    """
+    Handles the Google login process.
+
+    Returns:
+        A JSON response indicating whether the login was successful or not.
+    """
+
     # Validate state token
     if request.args.get('state') != session['state']:
         response = make_response(json.dumps('Invalid state parameter.'), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
+
     # Obtain authorization code
     code = request.data
 
@@ -109,6 +117,7 @@ def gconnect():
            % access_token)
     h = httplib2.Http()
     result = json.loads(h.request(url, 'GET')[1])
+
     # If there was an error in the access token info, abort.
     if result.get('error') is not None:
         response = make_response(json.dumps(result.get('error')), 500)
@@ -127,17 +136,36 @@ def gconnect():
     if result['issued_to'] != CLIENT_ID:
         response = make_response(
             json.dumps("Token's client ID does not match app's."), 401)
-        print("Token's client ID does not match app's.")
         response.headers['Content-Type'] = 'application/json'
         return response
 
-    stored_access_token = session.get('access_token')
-    stored_gplus_id = session.get('gplus_id')
-    if stored_access_token is not None and gplus_id == stored_gplus_id:
-        response = make_response(json.dumps('Current user is already connected.'),
-                                 200)
-        response.headers['Content-Type'] = 'application/json'
-        return response
+    # Store the access token and gplus_id in the session for later use.
+    session['access_token'] = credentials.access_token
+    session['gplus_id'] = gplus_id
+
+    # Get user info
+    userinfo_url = "https://www.googleapis.com/oauth2/v1/userinfo"
+    params = {'access_token': credentials.access_token, 'alt': 'json'}
+    answer = requests.get(userinfo_url, params=params)
+
+    data = answer.json()
+
+    # Store user info in the session for later use.
+    session['username'] = data['name']
+    session['picture'] = data['picture']
+    session['email'] = data['email']
+
+    # Create user if it doesn't exist in the database.
+    user_id = getUserID(session['email'])
+    if not user_id:
+        user_id = createUser(session)
+    session['user_id'] = user_id
+
+    # Return a success response.
+    response = make_response(json.dumps('Login successful.'), 200)
+    response.headers['Content-Type'] = 'application/json'
+    return response
+
     
     # Set up the credentials and gplus_id
     credentials = Credentials.from_authorized_user_info(authorized_user_info, scopes)
