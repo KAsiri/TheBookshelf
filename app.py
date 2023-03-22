@@ -7,6 +7,8 @@ import random
 import string
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
+from google.auth.transport import requests
+from google.oauth2.credentials import Credentials
 import httplib2
 import json
 from flask import make_response
@@ -136,37 +138,78 @@ def gconnect():
                                  200)
         response.headers['Content-Type'] = 'application/json'
         return response
+    
+    # Set up the credentials and gplus_id
+    credentials = Credentials.from_authorized_user_info(authorized_user_info, scopes)
+    gplus_id = authorized_user_info['sub']
 
-    # Store the access token in the session for later use.
+    # Call the handle_login function to handle the login process
+    handle_login(credentials, gplus_id)
+
+
+
+    # Constants
+USERINFO_URL = "https://www.googleapis.com/oauth2/v1/userinfo"
+DEFAULT_IMAGE_SIZE = 300
+DEFAULT_IMAGE_BORDER_RADIUS = 150
+
+def get_user_info(access_token):
+    """Get user info from the Google API."""
+    params = {'access_token': access_token, 'alt': 'json'}
+    response = requests.get(USERINFO_URL, params=params)
+
+    if not response.ok:
+        raise ValueError('Error getting user info')
+
+    return response.json()
+
+def create_user_if_not_exists(session):
+    """Create a new user if the user does not exist."""
+    email = session.get('email')
+
+    if not email:
+        raise ValueError('Email is missing in session')
+
+    user_id = getUserID(email)
+
+    if not user_id:
+        user_id = createUser(session)
+
+    session['user_id'] = user_id
+
+def generate_output_html(session):
+    """Generate the output HTML with the user info."""
+    username = session.get('username')
+    picture = session.get('picture')
+
+    if not username or not picture:
+        raise ValueError('Username or picture is missing in session')
+
+    output = '<h1>Welcome, {}!</h1>'.format(username)
+    output += '<img src="{}" style="width: {}px; height: {}px; border-radius: {}px; -webkit-border-radius: {}px; -moz-border-radius: {}px;">'.format(
+        picture, DEFAULT_IMAGE_SIZE, DEFAULT_IMAGE_SIZE, DEFAULT_IMAGE_BORDER_RADIUS, DEFAULT_IMAGE_BORDER_RADIUS, DEFAULT_IMAGE_BORDER_RADIUS)
+    flash("You are now logged in as {}".format(username))
+    return output
+
+# Main function
+def handle_login(credentials, gplus_id):
+    """Handle the login process."""
     session['access_token'] = credentials.access_token
     session['gplus_id'] = gplus_id
 
-    # Get user info
-    userinfo_url = "https://www.googleapis.com/oauth2/v1/userinfo"
-    params = {'access_token': credentials.access_token, 'alt': 'json'}
-    answer = requests.get(userinfo_url, params=params)
+    data = get_user_info(credentials.access_token)
 
-    data = answer.json()
+    session['username'] = data.get('name')
+    session['picture'] = data.get('picture')
+    session['email'] = data.get('email')
 
-    session['username'] = data['name']
-    session['picture'] = data['picture']
-    session['email'] = data['email']
+    create_user_if_not_exists(session)
 
-    user_id = getUserID(session['email'])
-    if not user_id:
-        user_id = createUser(session)
-    session['user_id'] = user_id
+    output = generate_output_html(session)
 
-    output = ''
-    output += '<h1>Welcome, '
-    output += session['username']
-    output += '!</h1>'
-    output += '<img src="'
-    output += session['picture']
-    output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
-    flash("you are now logged in as %s" % session['username'])
-    print("done!")
+    print("Done!")
     return output
+
 
 # function to add the new user to database
 
