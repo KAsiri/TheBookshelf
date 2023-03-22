@@ -1,108 +1,61 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
- 
+
 from database_setup import Catalog, Base, Book, User
- 
+
+# create engine
 engine = create_engine('sqlite:///bookscatalog.db')
-# Bind the engine to the metadata of the Base class so that the
-# declaratives can be accessed through a DBSession instance
+
+# bind metadata to engine
 Base.metadata.bind = engine
- 
+
+# create session factory
 DBSession = sessionmaker(bind=engine)
-# A DBSession() instance establishes all conversations with the database
-# and represents a "staging zone" for all the objects loaded into the
-# database session object. Any change made against the objects in the
-# session won't be persisted into the database until you call
-# session.commit(). If you're not happy about the changes, you can
-# revert all of them back to the last commit by calling
-# session.rollback()
-session = DBSession()
-
-# Admin
-user = User(name = "Admin",email = "admin@admin.c")
-
-session.add(user)
-session.commit()
-
-#Books for History
-catalog1 = Catalog(name = "History", user = user)
-
-session.add(catalog1)
-session.commit()
 
 
-book1 = Book(name = "First History Book", description = "Description of the First History Book ...", author_name = "Author A", publish_year = "2005", catalog = catalog1, user = user)
-
-session.add(book1)
-session.commit()
-
-book2 = Book(name = "Second History Book", description = "Description of the Second History Book ...", author_name = "Author B", publish_year = "2010", catalog = catalog1, user = user)
-
-session.add(book2)
-session.commit()
-
-book3 = Book(name = "Third History Book", description = "Description of the Third History Book ...", author_name = "Author C", publish_year = "2015", catalog = catalog1, user = user)
-
-session.add(book3)
-session.commit()
-
-#Books for Sciences
-catalog2 = Catalog(name = "Sciences", user = user)
-
-session.add(catalog2)
-session.commit()
+def add_user(name, email, session):
+    """Adds a user to the database."""
+    user = User(name=name, email=email)
+    session.add(user)
+    session.commit()
 
 
-book1 = Book(name = "First Sciences Book", description = "Description of the First Sciences Book ...", author_name = "Author D", publish_year = "2002", catalog = catalog2, user = user)
-
-session.add(book1)
-session.commit()
-
-book2 = Book(name = "Second Sciences Book", description = "Description of the Second Sciences Book ...", author_name = "Author B", publish_year = "2008", catalog = catalog2, user = user)
-
-session.add(book2)
-session.commit()
-
-book3 = Book(name = "Third Sciences Book", description = "Description of the Third Sciences Book ...", author_name = "Author E", publish_year = "2013", catalog = catalog2, user = user)
-
-session.add(book3)
-session.commit()
+def add_catalog(name, user, session):
+    """Adds a catalog to the database."""
+    catalog = Catalog(name=name, user=user)
+    session.add(catalog)
+    session.commit()
+    return catalog
 
 
-#Books for Kids
-catalog3 = Catalog(name = "Kids", user = user)
-
-session.add(catalog3)
-session.commit()
-
-
-book1 = Book(name = "First Kids Book", description = "Description of the First Kids Book ...", author_name = "Author F", publish_year = "2010", catalog = catalog3, user = user)
-
-session.add(book1)
-session.commit()
-
-book2 = Book(name = "Second Kids Book", description = "Description of the Second Kids Book ...", author_name = "Author C", publish_year = "2017", catalog = catalog3, user = user)
-
-session.add(book2)
-session.commit()
+def add_book(name, description, author_name, publish_year, catalog, user, session):
+    """Adds a book to the database."""
+    book = Book(name=name, description=description, author_name=author_name, publish_year=publish_year, catalog=catalog, user=user)
+    session.add(book)
+    session.commit()
 
 
-#Books for Crime
-catalog4 = Catalog(name = "Crime", user = user)
+def add_sample_data():
+    """Adds sample data to the database."""
+    # create session
+    session = DBSession()
 
-session.add(catalog4)
-session.commit()
+    # add admin user
+    add_user(name="Admin", email="admin@admin.c", session=session)
 
+    # add catalogs and books
+    admin_user = session.query(User).filter_by(name="Admin").one()
 
-book1 = Book(name = "First Crime Book", description = "Description of the First Crime Book ...", author_name = "Author A", publish_year = "2012", catalog = catalog4, user = user)
+    history_catalog = add_catalog(name="History", user=admin_user, session=session)
+    add_book(name="First History Book", description="Description of the First History Book ...", author_name="Author A", publish_year="2005", catalog=history_catalog, user=admin_user, session=session)
+    add_book(name="Second History Book", description="Description of the Second History Book ...", author_name="Author B", publish_year="2010", catalog=history_catalog, user=admin_user, session=session)
+    add_book(name="Third History Book", description="Description of the Third History Book ...", author_name="Author C", publish_year="2015", catalog=history_catalog, user=admin_user, session=session)
 
-session.add(book1)
-session.commit()
+    sciences_catalog = add_catalog(name="Sciences", user=admin_user, session=session)
+    add_book(name="First Sciences Book", description="Description of the First Sciences Book ...", author_name="Author D", publish_year="2002", catalog=sciences_catalog, user=admin_user, session=session)
+    add_book(name="Second Sciences Book", description="Description of the Second Sciences Book ...", author_name="Author B", publish_year="2008", catalog=sciences_catalog, user=admin_user, session=session)
+    add_book(name="Third Sciences Book", description="Description of the Third Sciences Book ...", author_name="Author E", publish_year="2013", catalog=sciences_catalog, user=admin_user, session=session)
 
-book2 = Book(name = "Second Crime Book", description = "Description of the Second Crime Book ...", author_name = "Author E", publish_year = "2001", catalog = catalog4, user = user)
-
-session.add(book2)
-session.commit()
-
-
-print("Catalog & Books added!")
+    kids_catalog = add_catalog(name="Kids", user=admin_user, session=session)
+    add_book(name="First Kids Book", description="Description of the First Kids Book ...", author_name="Author F", publish_year="2010", catalog=kids_catalog, user=admin_user, session=session)
+    add_book(name="Second Kids Book", description="Description of the Second Kids Book ...", author_name="Author
