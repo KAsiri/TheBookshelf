@@ -328,26 +328,22 @@ def newBook(catalog_id):
 
 @app.route('/catalogs/<int:catalog_id>/book/<int:book_id>/edite', methods=['GET', 'POST'])
 def editBook(catalog_id, book_id):
-    editedBook = sessionDB.query(Book).filter_by(id=book_id).one()
-    if editedBook.user_id == session['user_id']:
-        if request.method == 'POST':
-            if request.form['name']:
-                editedBook.name = request.form['name']
-            if request.form['description']:
-                editedBook.description = request.form['name']
-            if request.form['author_name']:
-                editedBook.author_name = request.form['author_name']
-            if request.form['publish_year']:
-                editedBook.publish_year = request.form['publish_year']
-            sessionDB.add(editedBook)
-            sessionDB.commit()
-            flash("The book %s updated successfully " % request.form['name'])
-            return redirect(url_for('catalogBooks', catalog_id=catalog_id))
-        else:
-            return render_template('editBook.html', catalog_id=catalog_id, book=editedBook)
-    else:
-        flash("You can edit only the Book you create it")
+    editedBook = sessionDB.query(Book).filter_by(id=book_id, user_id=session['user_id']).one_or_none()
+    if editedBook is None:
+        flash("You can edit only the book you created.")
         return redirect(url_for('catalogBooks', catalog_id=catalog_id))
+
+    if request.method == 'POST':
+        form_data = request.form.to_dict(flat=True)
+        for key in ['name', 'description', 'author_name', 'publish_year']:
+            if key in form_data:
+                setattr(editedBook, key, form_data[key])
+        sessionDB.commit()
+        flash(f"The book {form_data['name']} updated successfully.")
+        return redirect(url_for('catalogBooks', catalog_id=catalog_id))
+
+    return render_template('editBook.html', catalog_id=catalog_id, book=editedBook)
+
 
 
 @app.route('/catalogs/<int:catalog_id>/book/<int:book_id>/delete', methods=['GET', 'POST'])
