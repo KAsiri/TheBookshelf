@@ -118,26 +118,21 @@ def gconnect():
     h = httplib2.Http()
     result = json.loads(h.request(url, 'GET')[1])
 
-    # If there was an error in the access token info, abort.
-    if result.get('error') is not None:
-        response = make_response(json.dumps(result.get('error')), 500)
-        response.headers['Content-Type'] = 'application/json'
-        return response
+    response = requests.get(url, headers={'Authorization': f'Bearer {access_token}'})
+    response.raise_for_status()
+    result = response.json()
 
-    # Verify that the access token is used for the intended user.
+    if result.get('error') is not None:
+        error_msg = result.get('error')
+        raise Exception(f"Error in access token info: {error_msg}")
+
     gplus_id = credentials.id_token['sub']
     if result['user_id'] != gplus_id:
-        response = make_response(
-            json.dumps("Token's user ID doesn't match given user ID."), 401)
-        response.headers['Content-Type'] = 'application/json'
-        return response
+        raise Exception("Token's user ID doesn't match given user ID.")
 
-    # Verify that the access token is valid for this app.
     if result['issued_to'] != CLIENT_ID:
-        response = make_response(
-            json.dumps("Token's client ID does not match app's."), 401)
-        response.headers['Content-Type'] = 'application/json'
-        return response
+        raise Exception("Token's client ID does not match app's.")
+
 
     # Store the access token and gplus_id in the session for later use.
     session['access_token'] = credentials.access_token
